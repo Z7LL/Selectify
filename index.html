@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selectify</title>
+    <style>
+        body {
+            background-color: #C842E3;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            height: 100vh;
+        }
+        #exit-button, #left-button, #right-button, #select-button {
+            position: absolute;
+            font-size: 24px;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        #exit-button {
+            top: 30px;
+            right: 30px;
+        }
+        #left-button {
+            top: 400px;
+            left: 50px;
+        }
+        #right-button {
+            top: 400px;
+            right: 50px;
+        }
+        #select-button {
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 20px;
+        }
+        #image-view {
+            width: calc(100% - 20px);
+            height: calc(100% - 400px);
+            object-fit: cover;
+            margin-top: 200px;
+        }
+    </style>
+</head>
+<body>
+    <button id="exit-button">X</button>
+    <img id="image-view" src="" alt="Agent">
+    <button id="left-button"><</button>
+    <button id="right-button">></button>
+    <button id="select-button">Select Agent</button>
+
+    <script>
+        const agents = [
+            "Clove", "Fade", "Gekko", "Iso", "Neon",
+            "Phoenix", "Reyna", "Sova", "Yoru", "Astra"
+        ];
+        let imageIndex = 0;
+        
+        const imageView = document.getElementById('image-view');
+        const exitButton = document.getElementById('exit-button');
+        const leftButton = document.getElementById('left-button');
+        const rightButton = document.getElementById('right-button');
+        const selectButton = document.getElementById('select-button');
+
+        const characterColors = {
+            "Clove": "#6c2581",
+            "Fade": "#5D97FF",
+            "Gekko": "#C8FF78",
+            "Iso": "#212582",
+            "Neon": "#397CFF",
+            "Phoenix": "#E1A300",
+            "Reyna": "#C373FA",
+            "Sova": "#395AFF",
+            "Yoru": "#313DFF",
+            "Astra": "#834FFF"
+        };
+
+        function showImage() {
+            const agentName = agents[imageIndex];
+            const imageUrl = `assets/${agentName}.png`;
+            imageView.src = imageUrl;
+            document.body.style.backgroundColor = characterColors[agentName] || '#C842E3';
+        }
+
+        function showPreviousImage() {
+            imageIndex = (imageIndex - 1 + agents.length) % agents.length;
+            showImage();
+        }
+
+        function showNextImage() {
+            imageIndex = (imageIndex + 1) % agents.length;
+            showImage();
+        }
+
+        async function sendSelectedCharacter(serverIp) {
+            const agentName = agents[imageIndex].toLowerCase();
+            const capitalizedAgentName = agentName.charAt(0).toUpperCase() + agentName.slice(1);
+
+            console.log("Current character name:", capitalizedAgentName);
+
+            const serverPort = 12345;
+
+            const url = `http://${serverIp}:${serverPort}/click?character=${capitalizedAgentName}`;
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    console.log('Character selected successfully');
+                } else {
+                    console.error('Error selecting character');
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
+
+            // Automatically add the second request
+            const selectUrl = `http://${serverIp}:${serverPort}/click?character=Select`;
+            try {
+                const response = await fetch(selectUrl);
+                if (response.ok) {
+                    console.log('Select request sent successfully');
+                } else {
+                    console.error('Error sending select request');
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
+        }
+
+        function getIpAddressFromQuery() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('ip');
+        }
+
+        const serverIp = getIpAddressFromQuery();
+        console.log("Server IP address:", serverIp);
+
+        if (!serverIp) {
+            alert("No IP address specified in the URL.");
+        } else {
+            showImage();
+
+            exitButton.addEventListener('click', () => window.close());
+            leftButton.addEventListener('click', showPreviousImage);
+            rightButton.addEventListener('click', showNextImage);
+            selectButton.addEventListener('click', () => sendSelectedCharacter(serverIp));
+        }
+    </script>
+</body>
+</html>
