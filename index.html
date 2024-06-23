@@ -109,7 +109,7 @@
 
             const serverPort = 12345;
 
-            const url = `http://${serverIp}:${serverPort}/click?character=${capitalizedAgentName}`;
+            const url = `https://${serverIp}:${serverPort}/click?character=${capitalizedAgentName}`;
             try {
                 const response = await fetch(url);
                 if (response.ok) {
@@ -122,7 +122,7 @@
             }
 
             // Automatically add the second request
-            const selectUrl = `http://${serverIp}:${serverPort}/click?character=Select`;
+            const selectUrl = `https://${serverIp}:${serverPort}/click?character=Select`;
             try {
                 const response = await fetch(selectUrl);
                 if (response.ok) {
