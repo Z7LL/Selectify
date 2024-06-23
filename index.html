@@ -109,9 +109,10 @@
 
             const serverPort = 12345;
 
-            const protocol = window.location.protocol; // Get the protocol of the current page
+            const isLocalIp = serverIp.startsWith('192.168.') || serverIp.startsWith('10.') || serverIp.startsWith('172.16.') || serverIp.startsWith('172.17.') || serverIp.startsWith('172.18.') || serverIp.startsWith('172.19.') || serverIp.startsWith('172.20.') || serverIp.startsWith('172.21.') || serverIp.startsWith('172.22.') || serverIp.startsWith('172.23.') || serverIp.startsWith('172.24.') || serverIp.startsWith('172.25.') || serverIp.startsWith('172.26.') || serverIp.startsWith('172.27.') || serverIp.startsWith('172.28.') || serverIp.startsWith('172.29.') || serverIp.startsWith('172.30.') || serverIp.startsWith('172.31.');
+            const protocol = isLocalIp ? 'http' : 'https'; // Use HTTP for local IPs
 
-            const url = `${protocol}//${serverIp}:${serverPort}/click?character=${capitalizedAgentName}`;
+            const url = `${protocol}://${serverIp}:${serverPort}/click?character=${capitalizedAgentName}`;
             try {
                 const response = await fetch(url);
                 if (response.ok) {
@@ -124,7 +125,7 @@
             }
 
             // Automatically add the second request
-            const selectUrl = `${protocol}//${serverIp}:${serverPort}/click?character=Select`;
+            const selectUrl = `${protocol}://${serverIp}:${serverPort}/click?character=Select`;
             try {
                 const response = await fetch(selectUrl);
                 if (response.ok) {
